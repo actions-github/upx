@@ -1,10 +1,7 @@
 # https://help.github.com/en/articles/contexts-and-expression-syntax-for-github-actions
 name: Test action
 
-on:
-  push:
-    branches:
-      - master
+on: [push]
 
 jobs:
   test-file:
@@ -15,6 +12,11 @@ jobs:
       matrix:
         os: [ubuntu-16.04, ubuntu-latest]
     steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
       - name: Compile test file
         run: |
           printf %s 'package main;import "fmt";func main(){fmt.Println("hi")}' > main.go
@@ -22,7 +24,7 @@ jobs:
           md5sum ./hi | cut -c -32 > hi.md5
 
       - name: Run current action (pack file)
-        uses: tarampampam/upx-action@master
+        uses: ./
         with:
           file: './hi'
           upx_args: '-7'
@@ -53,6 +55,11 @@ jobs:
       matrix:
         os: [ubuntu-16.04, ubuntu-latest]
     steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
       - name: Compile test files
         run: |
           printf %s 'package main;import "fmt";func main(){fmt.Println("hi1")}' > main1.go
@@ -63,7 +70,7 @@ jobs:
           md5sum ./hi2 | cut -c -32 > hi2.md5
 
       - name: Run current action (pack files in directory)
-        uses: tarampampam/upx-action@master
+        uses: ./
         with:
           dir: '.'
           upx_args: '-7'
